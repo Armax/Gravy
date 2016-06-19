@@ -280,6 +280,7 @@ class CraftPlayer:
     _printChat = False
     _nickname = ''
     _password = ''
+    _protonum = 210
     _proxy = ''
     _sessionId = ''
     _loggedIn = False
@@ -342,7 +343,7 @@ class CraftPlayer:
         except:
             pass
 
-    def __init__(self, nick, password = '', proxy = '', server = '', hostx = '', portx = '', isOffline = False, printchat = False, debug = False, attacks = [], prependFlood = '', msg = '', count = 5, callback = dummy, eventHook = None):
+    def __init__(self, nick, password = '', protonum = 210, proxy = '', server = '', hostx = '', portx = '', isOffline = False, printchat = False, debug = False, attacks = [], prependFlood = '', msg = '', count = 5, callback = dummy, eventHook = None):
         self._queuedMessages = list()
         self._kre = False
         self._eHook = eventHook
@@ -351,6 +352,7 @@ class CraftPlayer:
         self._count = count
         self._nickname = nick
         self._password = password
+        self._protonum = protonum
         self._printChat = printchat
         self._server = server
         self._isOffline = isOffline
@@ -390,7 +392,7 @@ class CraftPlayer:
             _serverip=self._server[0]
             _serverport = self._server[1]
             self._socket.connect((_serverip, _serverport))
-            self.SendPacket('\x00' + encode_varint(210) + CraftString(_serverip) + struct.pack('>h', _serverport)+encode_varint(2))
+            self.SendPacket('\x00' + encode_varint(self._protonum) + CraftString(_serverip) + struct.pack('>h', _serverport)+encode_varint(2))
             self.SendPacket('\x00' + CraftString(self._nickname))
         except:
             ProxyManager.badProxy(self._proxy)
@@ -545,7 +547,6 @@ class CraftPlayer:
                 if self._packet_len == None or self._packet_len <= 0:
                     _packet_id = 'ER'
                 if self._threshold != -1:
-                    print "thresh"
                     data_lenght = self._readVarint()
                     compressed = self._getPacket()
                     if data_lenght==0:
@@ -554,7 +555,6 @@ class CraftPlayer:
                         self._packet = io.BytesIO(compressed.decode('zlib'))
                     _packet_id = self._readVarint()
                 else:
-                    print "packet"
                     tmp_p = self._getPacket()
                     self._packet = io.BytesIO(tmp_p)
                     _packet_id = self._readVarint()
@@ -586,31 +586,24 @@ class CraftPlayer:
                     print token
                     if shared != '':
                         rsa_key = decode_public_key(shared)
-                        print "6"
                         shared_secret = generate_shared_secret()
                         print shared_secret
                         response_token = encrypt_with_public_key(
                             token,
                             rsa_key
                         )
-                        print "8"
                         encrypted_shared_secret = encrypt_with_public_key(
                             shared_secret,
                             rsa_key
                         )
-                        print "9"
                         server_hash = make_server_hash(
                             server_id,
                             shared_secret,
                             rsa_key,
                         )
-                        print "10"
                         join_server(self._session, server_hash)
-                        print "11"
                         self._SendEncrypt(encrypted_shared_secret,response_token)
-                        print "12"
                         self._AES = generated_cipher(shared_secret)
-                        print "13"
                     else:
                         self._SendEncrypt('',token)
                 elif _packet_id == 0x02:
